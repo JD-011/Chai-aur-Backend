@@ -23,8 +23,18 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 => Add "Readme.md" & ".gitignore" in the root of your project <br>
 => Change the type to "module" in place of "commonjs" in "package.json" <br>
 => Setup the project/file structure for JS backend in "src" by creating necessary files & folders and also don't forget to create environment variables files (".env" & ".env.sample") in the root of our project <br>
+=> note: you can push empty folder to github by adding ".gitkeep" file in it <br>
 => Install dev dependency nodemon for auto restarting the node application when file changes in the directory are detected by: ` npm i -D nodemon` <br>
 => Don't forget to add the script `"dev": "nodemon src/index.js"` <br>
 => Install dev dependency prettier by: `npm i -D prettier` <br>
 => Add ".prettierrc" & ".prettierignore" in the root of your project <br>
 => For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/2111246011dc574ec8beb4303db29ae118bf7fad) is the last commit made on the github in this section
+
+---
+
+=> Always use try-catch or resolve promises while talking with database <br>
+=> As hitesh sir says "Database is in another continent", so always use async-await while talking with database <br>
+
+# Assignment-1:
+=> explore about exit codes in node.js like one we used here "process.exit(1)" <br>
+=> Try to print and understand the connection response we get when we connect to our mongoDB database using "mongoose.connect()" (done) <br>
