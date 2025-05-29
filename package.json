@@ -1,0 +1,17 @@
+{
+  "name": "chai-aur-backend",
+  "version": "1.0.0",
+  "description": "A bakend at chai aur code",
+  "keywords": [
+    "javascript",
+    "backend",
+    "chai"
+  ],
+  "license": "ISC",
+  "author": "Jayveer Dahiya",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
