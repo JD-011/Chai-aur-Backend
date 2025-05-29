@@ -32,8 +32,20 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-=> Always use try-catch or resolve promises while talking with database <br>
-=> As hitesh sir says "Database is in another continent", so always use async-await while talking with database <br>
+# Database connection (MongoDB):
+
+=> First of all install these dependencies: `npm i mongoose express dotenv` <br>
+=> We can use MongoDB in multiple ways, here we are using MongoDB Atlas: A multi-cloud database <br>
+=> First create an account on MongoDB Atlas if you don't have any <br>
+=> Then set up a new project, in that project create a new cluster and provide necessary information required: username, password etc... <br>
+=> Once the cluster is created, recheck the security settings: database access & network access <br>
+=> Now copy the connection string given by MongoDB Atlas and paste it in our .env file as "MONGODB_URI", and don't forget to remove last '/' <br>
+=> Note that our "MONGODB_URI" should consist the same username & password we provided at the creation of our project at MongoDB Atlas <br>
+=> Then write the logic of connecting MongoDB with our backend <br>
+=> Here are two things we need to follow whenever we are talking with database: <br>
+=> 1) Always use try-catch or resolve promises while talking with database <br>
+=> 2) As hitesh sir says "Database is in another continent", so always use async-await while talking with database <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/2a0542d38496921986b6fa9fe2730f061fca192e) is the last commit made on the github in this section
 
 # Assignment-1:
 => explore about exit codes in node.js like one we used here "process.exit(1)" <br>
