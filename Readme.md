@@ -15,7 +15,6 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 ---
 # Road-map & Guide for our project:
 
----
 # Initialize the project:
 
 => Initialize the empty project by: `npm init` <br>
@@ -47,6 +46,12 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 => 2) As hitesh sir says "Database is in another continent", so always use async-await while talking with database <br>
 => For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/2a0542d38496921986b6fa9fe2730f061fca192e) is the last commit made on the github in this section
 
+---
+
 # Assignment-1:
 => explore about exit codes in node.js like one we used here "process.exit(1)" <br>
-=> Try to print and understand the connection response we get when we connect to our mongoDB database using "mongoose.connect()" (done) <br>
+=> Try to print and understand the connection response we get when we connect to our mongoDB database using "mongoose.connect()" (done)
+
+---
+
+=> Note: we use app.use() whenever we are dealing with any middleware or any configuration settings
