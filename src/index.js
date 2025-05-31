@@ -13,7 +13,7 @@ connectDB()
       console.log("ERROR: ", err);
       throw err;
     });
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT || 8000, () => {
       console.log(`Server running at port: ${process.env.PORT}`);
     });
   })

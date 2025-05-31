@@ -54,4 +54,11 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-=> Note: we use app.use() whenever we are dealing with any middleware or any configuration settings
+# Creating some preparation for the future use:
+=> Here we are setting up some middlewares & also creating custom API response and error handling class <br>
+=> this step is very important & crucial whenever we are creating any production grade application, and this step is very common in every production grade codes <br>
+=> First of all install these dependencies: `npm i cookie-parser cors` <br>
+=> Here we are dealing with some middlewares (the functions that run before your request hits the route handler) like "cookie-parser" & "cors" and also setting up some configuration using "app.use()" <br>
+=> Note: we use app.use() whenever we are dealing with any middleware or any configuration settings <br>
+=> Then we are creating our own custom classes for API response and error handling, in which we are extending "Error" class of Node.js in our custom error class <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/f5b207100dd7fb6e5591a4f5c714412fd0f4c44c) is the last commit made on the github in this section
