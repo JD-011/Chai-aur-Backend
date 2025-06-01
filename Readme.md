@@ -81,3 +81,8 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 # Assignment-2:
 => Explore what is Bson data & Bson vs Json (MongoDB uses Bson data to store id's)
+
+---
+
+# Assignment-3:
+=> Improve the file naming part in "multer.middleware.js"
