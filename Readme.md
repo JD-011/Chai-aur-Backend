@@ -48,12 +48,6 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-# Assignment-1:
-=> explore about exit codes in node.js like one we used here "process.exit(1)" <br>
-=> Try to print and understand the connection response we get when we connect to our mongoDB database using "mongoose.connect()" (done)
-
----
-
 # Creating some preparation for the future use:
 => Here we are setting up some middlewares & also creating custom API response and error handling class <br>
 => this step is very important & crucial whenever we are creating any production grade application, and this step is very common in every production grade codes <br>
@@ -79,10 +73,23 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-# Assignment-2:
-=> Explore what is Bson data & Bson vs Json (MongoDB uses Bson data to store id's)
+# File uploading:
+=> Handling files efficiently is the job of the backend developer <br>
+=> Here our main task is to handle the file uploading <br>
+=> File uploading can be done in multiple ways: <br>
+=> we can either use our own server to store our files, but it can increase the load on our server <br>
+=> Another way is to store the entire file on our database (here we are using MongoDB, and it gives the option to store entire files/multimedia), but even if our database supports file, it can increase the load on our database heavily and can degrade the performance of our database <br>
+=> so what is the solution then, the best approach is to use any third party services (like cloudinary, AWS etc...) <br>
+=> Every production grade code uses this and this is very common approach used by almost every organization in today's market <br>
+=> So we will also use the third party service named "cloudinary" to store our files <br>
+=> For that we have to install these dependencies: `npm i cloudinary multer` <br>
+=> As we discussed earlier "cloudinary" will be used to store our files and we will be write this functionality as an utility in our project and we will store the url given by cloudinary once we upload the file into our database <br>
+=> "multer" will be usefull to store our file temporary on the server before we upload it into cloudinary, and we are doing this because we can easily recover any files from local storage if anything wrong happens while uploading file and we will delete that file once we finished uploading it on cloudinary <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/14670c32991342a0691ae16031244ee68b1ed0bf) is the last commit made on the github in this section
 
 ---
 
-# Assignment-3:
+# Assignments:
+=> explore about exit codes in node.js like one we used here "process.exit(1)" <br>
+=> Explore what is Bson data & Bson vs Json (MongoDB uses Bson data to store id's) <br>
 => Improve the file naming part in "multer.middleware.js"
