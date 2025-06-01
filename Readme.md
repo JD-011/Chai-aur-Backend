@@ -65,7 +65,17 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-# 
+# User & Video models:
+=> Here we are creating user & video models with hooks & JWT <br>
+=> First of all install these dependencies: `npm i mongoose mongoose-aggregate-paginate-v2 bcrypt jsonwebtoken` <br>
+=> All of this dependencies will be used to create user & video models <br>
+=> For the structure/layout of this models you can refer the "Model link" given at the beginning of this page <br>
+=> we will use "mongoose" for creating our schemas & models <br>
+=> "mongoose-aggregate-paginate-v2" wii be used for aggregation queries <br>
+=> "bcrypt" is essential for encrypting & decrypting passwords of the users <br>
+=> above step is necessary for security of user's password because our databases might leak, so we can't just store user's password as it is in database <br>
+=> we also used "jsonwebtoken" (JWT) in our model, right now we are just generating "AccessToken" & "RefreshToken" out of it, we will understand for what it is used for & what it does later on <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/b976e07ae6defd905656e61ece47968ae3bd7ea0) is the last commit made on the github in this section
 
 ---
 
