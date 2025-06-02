@@ -89,6 +89,13 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Setting up "routes" & "controllers":
+=> Here we are just configuring "routes" & "controllers" <br>
+=> We are just doing some initial configuration before writing any logic <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/af4a00f953766691fffe2292ac8484faa7b87c6f) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => explore about exit codes in node.js like one we used here "process.exit(1)" <br>
 => Explore what is Bson data & Bson vs Json (MongoDB uses Bson data to store id's) <br>
