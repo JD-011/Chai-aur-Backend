@@ -15,13 +15,13 @@ const uploadOnCloudinary = async (localFilePath) => {
             resource_type: "auto",
         });
         // file has been uploaded successfully
-        console.log("file uploaded on cloudinary, url: ", response.url);
+        // console.log("file uploaded on cloudinary, url: ", response.url);
         return response;
     } catch (err) {
         console.error("Error in uploading file to cloudinary: ", err);
-        // TODO: go threw this code once more because there is some misunderstanding about removing file when we get any error...
-        fs.unlinkSync(localFilePath); // remove locally saved temporary file as the upload operation got failed
         return null;
+    } finally {
+        if (localFilePath) fs.unlinkSync(localFilePath);
     }
 };
 

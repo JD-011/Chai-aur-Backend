@@ -16,12 +16,12 @@ const registerUser = asyncHandler(async (req, res) => {
     // return res
 
     const { fullName, username, email, password } = req.body;
-    console.log("email", email);
-    console.log("password", password);
+    // console.log("email", email);
+    // console.log("password", password);
 
     if (
         [fullName, username, email, password].some(
-            (field) => field.trim() === ""
+            (field) => !field || field.trim() === ""
         )
     ) {
         throw new ApiError(400, "All fields are required");
@@ -36,7 +36,9 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage
+        ? req.files?.coverImage[0].path
+        : null;
 
     if (!avatarLocalPath) throw new ApiError(400, "Avatar is required");
 
