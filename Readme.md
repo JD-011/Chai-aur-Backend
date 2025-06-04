@@ -96,6 +96,31 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Building logic for registering the user:
+=> Here we are building register controller, means we are writing logic for registering the user <br>
+=> Whenever we have to write this type of logic codes, first step to take is build an algorithm <br>
+=> Algorithm is a step-by-step process of what we are going to do, and in this part we have to take care of every scenario & edge cases that are possible during the execution of our code <br>
+=> So here first of all we wrote the algorithm for registering any user <br>
+=> The algorithm is written in the comments of the register controller, so you can go threw that if you want <br>
+=> Once our algorithm was ready we just simply convert that algorithm into logic code step by step <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/68a56add99feec6d1387616024a1c697416b9f41) is the last commit made on the github in this section
+
+---
+
+# Testing & Debugging the register controller:
+=> Whenever we built any logic (here controller), the most important thing to do next is testing our logic & debug every issue we find in the way <br>
+=> Here we built a register controller that handles any api request for registering any new user <br>
+=> And that request will be sent by the frontend side, so the main question is how to test our logic in this case because we are only building backend now not frontend <br>
+=> It's not just our issue, the same happens in every production process, because it is not necessary that frontend part will be ready by now for testing purpose and also we can't just wait for that to happen that will be west of time <br>
+=> But to solve this issue we have a wonderfull app named "postman", in this app we can directly send any api request (get, post, delete etc...) with any data along with that, so now we don't have to build frontend to test our api request handling by server, we can just write the request url and required data in postman and send it to our server for testing <br>
+=> There are many other tools available in the market which do the same thing but "postman" is the most used toll by everyone especially in this type of scenario <br>
+=> And not just only that but postman also provide some features where we can create our own collection and in which we can store the all of our api requests in a very structural way and save our work there <br>
+=> The best part about postman is that the same collection folder will be shared with frontend developer so they can easily integrate with backend, so it is important tool to learn for every developer as of now <br>
+=> So in this section we just test & debug our register controller with the help of postman <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/d541c31cfa5a3a8d668e1fb066e1d8d3bca81527) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
