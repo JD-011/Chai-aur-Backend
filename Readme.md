@@ -132,7 +132,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 => JWT token is the encoded tokens in which we can store any data like here we are storing user's credentials, and for generating this type of tokens we have to pass our own JWT-secret and the same secret will be required for decoding the tokens <br>
 => And generally JWT-secrets will be stored at the server side in the environment variable file <br>
 => The main purpose of this tokens is to authenticate/authorize the user who are making any request to the server for security reasons <br>
-=> Actually the one token (access) is enough to this task so why we using the two token here, it's because of whenever the access token is expired the user have to login himself again and to remove this problem we introduced the refresh token <br>
+=> Actually the one token (access) is enough to do this task so why we using the two tokens here, it's because of whenever the access token is expired the user have to login himself again and to remove this problem we introduced the refresh token <br>
 => generally the access token is sort lived and the refresh token is long lived means the expiry time of the refresh token is greater than the expiry time of the access token <br>
 => Both of this token will be generated when user successfully logs in into application, and both of this will be stored in the user-browser's cookies, and the refresh token will be stored into db as well <br>
 => As we discussed earlier the access token will be used for authentication/authorization purpose so the user have to send it along with the request <br>
