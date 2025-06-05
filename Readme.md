@@ -121,6 +121,28 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Building logic for "loginUser", "logoutUser" & "refreshAccessToken" (controllers) and Testing & Debugging the controllers:
+=> Here we are building another controllers in "user.controller.js" with the same approach we take while building the register controller <br>
+=> Here we also build our own middleware: "auth.middleware.js" which we used right before the logout controller, the main purpose of this middleware was to authenticate/validate the user <br>
+=> We build that logic as middleware because we are going to use that same logic in many other controllers also because authenticate the user right before he makes the request to db or for any other sensitive information is very common step for security purpose, and this type of routes is called secure routes <br>
+=> Here for authenticate the user we are using the concept of access token which the user have to send along with request to access these types of routes <br>
+=> And if you remember then we are also storing the user's refresh token into db <br>
+=> So what is this access and refresh tokens & how they are different from each other and how and why we are using it here, let's discuss about that: <br>
+=> This tokens (refresh & access) is generated using JWT (jsonwebtoken) <br>
+=> JWT token is the encoded tokens in which we can store any data like here we are storing user's credentials, and for generating this type of tokens we have to pass our own JWT-secret and the same secret will be required for decoding the tokens <br>
+=> And generally JWT-secrets will be stored at the server side in the environment variable file <br>
+=> The main purpose of this tokens is to authenticate/authorize the user who are making any request to the server for security reasons <br>
+=> Actually the one token (access) is enough to this task so why we using the two token here, it's because of whenever the access token is expired the user have to login himself again and to remove this problem we introduced the refresh token <br>
+=> generally the access token is sort lived and the refresh token is long lived means the expiry time of the refresh token is greater than the expiry time of the access token <br>
+=> Both of this token will be generated when user successfully logs in into application, and both of this will be stored in the user-browser's cookies, and the refresh token will be stored into db as well <br>
+=> As we discussed earlier the access token will be used for authentication/authorization purpose so the user have to send it along with the request <br>
+=> And here when the access token is expired user don't have to login again, he just have to make an request to particular end point of the server along with his refresh token which usually done automatically by the frontend part <br>
+=> The server will match this refresh token with the one stored in db and if both are same then server will generate the new access & refresh tokens and send both into user's cookies and store the new refresh token into db as well <br>
+=> So in sort the job of the refresh token is to refresh the access token, so until the user have the unexpired refresh token stored in his cookies he do not have to login again <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/5466f78557077103d4fd7649c0ecfedf6f259413) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
