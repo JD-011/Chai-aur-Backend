@@ -237,7 +237,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     user.password = newPassword;
     await user.save({ validateBeforeSave: false });
 
-    res.send(200).json(
+    res.status(200).json(
         new ApiResponse(200, null, "Password changed successfully")
     );
 });
@@ -264,7 +264,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password -refreshToken");
 
-    res.send(200).json(
+    res.status(200).json(
         new ApiResponse(200, user, "Account details updated successfully")
     );
 });
@@ -289,7 +289,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password -refreshToken");
 
-    res.send(200).json(
+    // TODO: Delete the old avatar stored in the cloudinary
+
+    res.status(200).json(
         new ApiResponse(200, user, "User avatar updated successfully")
     );
 });
@@ -317,7 +319,9 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password -refreshToken");
 
-    res.send(200).json(
+    // TODO: Delete the old Cover image stored in the cloudinary
+
+    res.status(200).json(
         new ApiResponse(200, user, "User cover image updated successfully")
     );
 });

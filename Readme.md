@@ -143,6 +143,22 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Subscription model:
+=> In this section we just added new model into our model's folder: subscription model <br>
+=> First we discussed its structure given in the model diagram like what type of data we will be storing in it <br>
+=> Then we just created its schema & model using mongoose <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/0922b4ba3ea57d459cea47b381232bd99f7bb5c8) is the last commit made on the github in this section
+
+---
+
+# Building logic for user account management endpoints:
+=> In this section we created some new routes & controllers for user account management like: changing current password, get information about current user, update account details, update user avatar or cover image <br>
+=> All of this routes comes under the category of secured routes as we used "verifyJWT" middleware in all of them <br>
+=> We also tested this all routes using postman and debugged every issue <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/5fda2bc0088c1b2fe2b0c52160338b072e771ea5) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
