@@ -162,7 +162,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 # MongoDB aggregation pipelines:
 => In this section we learnt how to use mongodb aggregation pipelines <br>
 => We learnt the how to write stages in the pipeline in our query <br>
-=> Here is link for detailed and official documentation for aggregation pipeline: [MongoDB Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/)
+=> Here is link for detailed and official documentation for aggregation pipeline: [MongoDB Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) <br>
 => We used this concept to write the logic of our controller named "getUserChannelProfile", in which we send all the necessary information to be displayed on given user's channel-profile <br>
 => For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/08ac57e36518c0ae1aa8b6295ffff0280b78afa2) is the last commit made on the github in this section
 
