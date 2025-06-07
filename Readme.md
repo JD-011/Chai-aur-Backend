@@ -173,7 +173,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 => Sub pipelines means another pipeline in pipeline <br>
 => Usually this type of query will be used where there is many dependencies between our collections/models of our database <br>
 => We used this concept to write the logic of our controller named "getWatchHistory", in which we send all the necessary information to be displayed on user's watch history <br>
-=> => For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/fbe86bc8071f647f59737001713319cc3f2f69d2) is the last commit made on the github in this section
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/fbe86bc8071f647f59737001713319cc3f2f69d2) is the last commit made on the github in this section
 
 ---
 
