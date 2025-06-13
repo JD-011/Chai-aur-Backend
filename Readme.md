@@ -183,6 +183,12 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Creating routes & controllers for "tweet":
+=> In this section we haven't done anything new just revised our previous concepts by creating new routes & controllers related to tweet <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/317e385a5bc26d1eef6c4ad3af5c3092a76f9eac) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
