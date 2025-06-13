@@ -29,8 +29,15 @@ const userSchema = new Schema(
             type: String, // cloudinary url
             required: true,
         },
+        avatarId: {
+            type: String,
+            required: true,
+        },
         coverImage: {
             type: String, // cloudinary url
+        },
+        coverImageId: {
+            type: String,
         },
         password: {
             type: String,

@@ -71,7 +71,9 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         avatar: avatar.url,
+        avatarId: avatar.public_id,
         coverImage: coverImage?.url || "",
+        coverImageId: coverImage.public_id,
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -276,22 +278,26 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
     if (!avatarLocalPath) throw new ApiError(400, "Avatar file is missing");
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const avatar = await uploadOnCloudinary(
+        avatarLocalPath,
+        req.user?.avatarId
+    );
 
     if (!avatar) throw new ApiError(500, "Error while uploading avatar");
     if (!avatar.url) throw new ApiError(500, "Error while uploading avatar");
+    if (!avatar.public_id)
+        throw new ApiError(500, "Error while uploading avatar");
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
                 avatar: avatar.url,
+                avatarId: avatar.public_id,
             },
         },
         { new: true }
     ).select("-password -refreshToken");
-
-    // TODO: Delete the old avatar stored in the cloudinary
 
     res.status(200).json(
         new ApiResponse(200, user, "User avatar updated successfully")
@@ -304,11 +310,16 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath)
         throw new ApiError(400, "Cover image file is missing");
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    const coverImage = await uploadOnCloudinary(
+        coverImageLocalPath,
+        req.user?.coverImageId
+    );
 
     if (!coverImage)
         throw new ApiError(500, "Error while uploading Cover image");
     if (!coverImage.url)
+        throw new ApiError(500, "Error while uploading Cover image");
+    if (!coverImage.public_id)
         throw new ApiError(500, "Error while uploading Cover image");
 
     const user = await User.findByIdAndUpdate(
@@ -316,12 +327,11 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         {
             $set: {
                 coverImage: coverImage.url,
+                coverImageId: coverImage.public_id,
             },
         },
         { new: true }
     ).select("-password -refreshToken");
-
-    // TODO: Delete the old Cover image stored in the cloudinary
 
     res.status(200).json(
         new ApiResponse(200, user, "User cover image updated successfully")
