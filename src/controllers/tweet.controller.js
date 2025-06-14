@@ -37,6 +37,10 @@ const getUserTweets = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid credentials");
     }
 
+    if (!isValidObjectId(userId)) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
     const tweets = await Tweet.find({
         owner: userId,
     });
