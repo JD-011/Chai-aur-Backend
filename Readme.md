@@ -204,6 +204,11 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Creating routes & controllers for "dashboard":
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/5d0a2ecd98c8951bf91cebf0a1e2523e78ade5e3) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
