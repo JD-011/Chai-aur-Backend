@@ -199,6 +199,11 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Creating routes & controllers for "playlist":
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/82bd537b63ffd4755fe84fcfb15d9aaa5b37e8ac) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
