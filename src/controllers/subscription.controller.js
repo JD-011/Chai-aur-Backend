@@ -21,13 +21,18 @@ const toggleSubscription = asyncHandler(async (req, res) => {
         channel: channelId,
     });
 
-    console.log(subscription);
-
     if (!subscription) {
         subscription = await Subscription.create({
             subscriber: req.user._id,
             channel: channelId,
         });
+    }
+
+    if (!subscription) {
+        throw new ApiError(
+            500,
+            "Something went wrong while toggling subscription"
+        );
     }
 
     res.status(200).json(
@@ -77,6 +82,14 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 subscriber: {
                     $first: "$subscriber",
                 },
+                subscribedAt: "$createdAt",
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                subscriber: 1,
+                subscribedAt: 1,
             },
         },
     ]);
@@ -135,6 +148,14 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                 channel: {
                     $first: "$channel",
                 },
+                subscribedAt: "$createdAt",
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                channel: 1,
+                subscribedAt: 1,
             },
         },
     ]);
