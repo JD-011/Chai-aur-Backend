@@ -209,6 +209,15 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Creating routes & controllers for "dashboard":
+=> In this section we learned something new: how to do pagination in MongoDB <br>
+=> we used package: "mongoose-aggregate-paginate-v2" to do pagination along with aggregation using "mongoose" <br>
+=> we attached plugin: "mongooseAggregatePaginate" with our schema to do this task <br>
+=> Here is the documentation link for mongoose-aggregate-paginate: [mongoose-aggregate-paginate-v2](https://github.com/aravindnc/mongoose-aggregate-paginate-v2#readme) <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/37b5fa4b17b8bd0c89016de89dd1b0c01516dde7) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
