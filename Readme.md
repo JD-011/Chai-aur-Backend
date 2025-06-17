@@ -214,4 +214,3 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
 => explore about exit codes in node.js like one we used here "process.exit(1)" <br>
 => Explore what is Bson data & Bson vs Json (MongoDB uses Bson data to store id's) <br>
-=> Improve the file naming part in "multer.middleware.js"
