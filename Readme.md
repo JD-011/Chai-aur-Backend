@@ -209,7 +209,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
-# Creating routes & controllers for "dashboard":
+# Creating routes & controllers for "comment":
 => In this section we learned something new: how to do pagination in MongoDB <br>
 => we used package: "mongoose-aggregate-paginate-v2" to do pagination along with aggregation using "mongoose" <br>
 => we attached plugin: "mongooseAggregatePaginate" with our schema to do this task <br>
