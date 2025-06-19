@@ -9,11 +9,11 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
 
     if (!channelId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Channel id is missing");
     }
 
     if (!isValidObjectId(channelId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid channel id");
     }
 
     let subscription = await Subscription.findOneAndDelete({
@@ -44,11 +44,11 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
 
     if (!channelId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Channel id is missing");
     }
 
     if (!isValidObjectId(channelId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid channel id");
     }
 
     const subscribers = await Subscription.aggregate([
@@ -110,11 +110,11 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params;
 
     if (!subscriberId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Subscriber id is missing");
     }
 
     if (!isValidObjectId(subscriberId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid subscriber id");
     }
 
     const channels = await Subscription.aggregate([

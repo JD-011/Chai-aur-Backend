@@ -13,7 +13,7 @@ const createTweet = asyncHandler(async (req, res) => {
     }
 
     if (!isValidObjectId(req.user._id)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(401, "Invalid user id");
     }
 
     const tweet = await Tweet.create({
@@ -34,11 +34,11 @@ const getUserTweets = asyncHandler(async (req, res) => {
     const { userId } = req.params;
 
     if (!userId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "User id is missing");
     }
 
     if (!isValidObjectId(userId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid user id");
     }
 
     const tweets = await Tweet.find({
@@ -49,7 +49,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
         throw new ApiError(500, "something went wrong while fetching tweets");
     }
 
-    res.status(202).json(
+    res.status(200).json(
         new ApiResponse(200, tweets, "User's tweets fetched successfully")
     );
 });
@@ -59,15 +59,15 @@ const updateTweet = asyncHandler(async (req, res) => {
     const { content } = req.body;
 
     if (!tweetId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Tweet id is missing");
     }
 
     if (!isValidObjectId(tweetId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid tweet id");
     }
 
     if (!content || content.trim() === "") {
-        throw new ApiError(401, "Content is required");
+        throw new ApiError(400, "Content is required");
     }
 
     const tweet = await Tweet.findByIdAndUpdate(
@@ -81,10 +81,7 @@ const updateTweet = asyncHandler(async (req, res) => {
     );
 
     if (!tweet) {
-        throw new ApiError(
-            500,
-            "something went wrong while updating the tweet"
-        );
+        throw new ApiError(404, "Tweet not found");
     }
 
     res.status(200).json(
@@ -96,20 +93,17 @@ const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Tweet id is missing");
     }
 
     if (!isValidObjectId(tweetId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid tweet id");
     }
 
     const tweet = await Tweet.findByIdAndDelete(tweetId);
 
     if (!tweet) {
-        throw new ApiError(
-            500,
-            "something went wrong while deleting the tweet"
-        );
+        throw new ApiError(404, "Tweet not found");
     }
 
     res.status(200).json(

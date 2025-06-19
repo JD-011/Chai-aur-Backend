@@ -9,7 +9,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Video id is missing");
     }
 
     const options = {
@@ -50,11 +50,11 @@ const addComment = asyncHandler(async (req, res) => {
     const { content } = req.body;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "video id is missing");
     }
 
     if (!content) {
-        throw new ApiError(400, "Can not post empty comment");
+        throw new ApiError(400, "Comment can not be empty");
     }
 
     const comment = await Comment.create({
@@ -77,11 +77,11 @@ const updateComment = asyncHandler(async (req, res) => {
     const { content } = req.body;
 
     if (!commentId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Comment id is missing");
     }
 
     if (!content) {
-        throw new ApiError(400, "Can not post empty comment");
+        throw new ApiError(400, "Comment can not be empty");
     }
 
     const comment = await Comment.findByIdAndUpdate(
@@ -95,7 +95,7 @@ const updateComment = asyncHandler(async (req, res) => {
     );
 
     if (!comment) {
-        throw new ApiError(500, "Something went wrong while updating comment");
+        throw new ApiError(404, "Comment not found");
     }
 
     res.status(200).json(
@@ -107,13 +107,13 @@ const deleteComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
 
     if (!commentId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Comment id is missing");
     }
 
     const comment = await Comment.findByIdAndDelete(commentId);
 
     if (!comment) {
-        throw new ApiError(500, "something went wrong while deleting comment");
+        throw new ApiError(404, "Comment not found");
     }
 
     res.status(200).json(

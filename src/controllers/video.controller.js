@@ -130,11 +130,11 @@ const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Video id is missing");
     }
 
     if (!isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Invalid video id");
     }
 
     const video = await Video.aggregate([
@@ -171,8 +171,8 @@ const getVideoById = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (!video) {
-        throw new ApiError(500, "Something went wrong while fetching video");
+    if (!video?.length) {
+        throw new ApiError(404, "Video not found");
     }
 
     res.status(200).json(
@@ -185,11 +185,11 @@ const updateVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Video id is missing");
     }
 
     if (!isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Invalid video id");
     }
 
     const thumbnailLocalPath = req.file?.path;
@@ -211,7 +211,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     });
 
     if (!video) {
-        throw new ApiError(500, "Something went wrong while updating video");
+        throw new ApiError(404, "Video not found");
     }
 
     if (thumbnail) {
@@ -227,17 +227,17 @@ const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Video id is missing");
     }
 
     if (!isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Invalid video id");
     }
 
     const video = await Video.findByIdAndDelete(videoId);
 
     if (!video) {
-        throw new ApiError(500, "Something went wrong while deleteing video");
+        throw new ApiError(404, "Video not found");
     }
 
     await deleteFromCloudinary(video.videoFileId, "video");
@@ -252,11 +252,11 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Video id is missing");
     }
 
     if (!isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credential");
+        throw new ApiError(400, "Invalid video id");
     }
 
     const video = await Video.findOneAndUpdate(
@@ -266,10 +266,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     );
 
     if (!video) {
-        throw new ApiError(
-            500,
-            "Something went wrong while toggling publish status"
-        );
+        throw new ApiError(404, "Video not found");
     }
 
     res.status(200).json(

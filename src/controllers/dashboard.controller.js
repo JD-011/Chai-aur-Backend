@@ -9,7 +9,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getChannelStats = asyncHandler(async (req, res) => {
     if (!req.user?._id) {
-        throw new ApiError("Invalid credential");
+        throw new ApiError(401, "Unauthorized");
     }
 
     const channelStats = await User.aggregate([
@@ -71,11 +71,8 @@ const getChannelStats = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (!channelStats) {
-        throw new ApiError(
-            500,
-            "Something went wrong while fetching channel stats"
-        );
+    if (!channelStats[0]) {
+        throw new ApiError(404, "Channel not found.");
     }
 
     res.status(200).json(
@@ -89,7 +86,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
 const getChannelVideos = asyncHandler(async (req, res) => {
     if (!req.user?._id) {
-        throw new ApiError(403, "Invalid credentials");
+        throw new ApiError(401, "Unauthorized");
     }
 
     const videos = await Video.aggregate([

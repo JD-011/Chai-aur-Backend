@@ -33,11 +33,11 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     const { userId } = req.params;
 
     if (!userId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "User id is missing");
     }
 
     if (!isValidObjectId(userId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid user id");
     }
 
     const playlists = await Playlist.find({
@@ -60,11 +60,11 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
     if (!playlistId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Playlist id is missing");
     }
 
     if (!isValidObjectId(playlistId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid playlist id");
     }
 
     const playlist = await Playlist.aggregate([
@@ -131,11 +131,8 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (!playlist) {
-        throw new ApiError(
-            500,
-            "Something went wrong while fetching the playlist"
-        );
+    if (!playlist[0]) {
+        throw new ApiError(404, "Playlist not found");
     }
 
     res.status(200).json(
@@ -147,11 +144,11 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params;
 
     if (!playlistId || !videoId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Playlist id or video id is missing");
     }
 
     if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid playlist id or video id");
     }
 
     const playlist = await Playlist.findByIdAndUpdate(
@@ -165,10 +162,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     );
 
     if (!playlist) {
-        throw new ApiError(
-            500,
-            "Something went wrong while adding video to playlist"
-        );
+        throw new ApiError(404, "Playlist not found");
     }
 
     res.status(200).json(
@@ -180,11 +174,11 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params;
 
     if (!playlistId || !videoId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Playlist id or video id is missing");
     }
 
     if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid playlist id or video id");
     }
 
     const playlist = await Playlist.findByIdAndUpdate(
@@ -198,10 +192,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     );
 
     if (!playlist) {
-        throw new ApiError(
-            500,
-            "Something went wrong while removing video from playlist"
-        );
+        throw new ApiError(404, "Playlist not found");
     }
 
     res.status(200).json(
@@ -213,20 +204,17 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
     if (!playlistId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Playlist id is missing");
     }
 
     if (!isValidObjectId(playlistId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(401, "Invalid playlist id");
     }
 
     const playlist = await Playlist.findByIdAndDelete(playlistId);
 
     if (!playlist) {
-        throw new ApiError(
-            500,
-            "Something went wrong while deleting the playlist"
-        );
+        throw new ApiError(404, "Playlist not found");
     }
 
     res.status(200).json(
@@ -239,15 +227,15 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     const { name, description } = req.body;
 
     if (!playlistId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Playlist id is missing");
     }
 
     if (!isValidObjectId(playlistId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid playlist id");
     }
 
     if ((!name && !description) || (!name?.trim() && !description?.trim())) {
-        throw new ApiError(401, "At least one field is required");
+        throw new ApiError(400, "At least one field is required");
     }
 
     const playlist = await Playlist.findByIdAndUpdate(
@@ -260,10 +248,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     );
 
     if (!playlist) {
-        throw new ApiError(
-            500,
-            "Something went wrong while updating the playlist"
-        );
+        throw new ApiError(404, "Playlist not found");
     }
 
     res.status(200).json(

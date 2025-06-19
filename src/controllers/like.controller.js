@@ -8,11 +8,11 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
     if (!videoId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Video id is missing");
     }
 
     if (!isValidObjectId(videoId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid video id");
     }
 
     let like = await Like.findOneAndDelete({
@@ -43,11 +43,11 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
 
     if (!commentId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Comment id is missing");
     }
 
     if (!isValidObjectId(commentId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid comment id");
     }
 
     let like = await Like.findOneAndDelete({
@@ -78,11 +78,11 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
 
     if (!tweetId) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Tweet id is missing");
     }
 
     if (!isValidObjectId(tweetId)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(400, "Invalid tweet id");
     }
 
     let like = await Like.findOneAndDelete({
@@ -111,11 +111,11 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     if (!req.user?._id) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(401, "Unauthorized");
     }
 
     if (!isValidObjectId(req.user._id)) {
-        throw new ApiError(401, "Invalid credentials");
+        throw new ApiError(401, "Invalid user id");
     }
 
     const likedVideos = await Like.aggregate([
