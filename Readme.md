@@ -218,6 +218,17 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ---
 
+# Creating routes & controllers for "video":
+=> This was very interesting and also a complex task <br>
+=> Here we used the concept of pagination again <br>
+=> Here we also found some bugs and debugged it one by one:
+=> First bug was in the cloudinary's delete method, that was simple we didn't provide the resource type while calling the cloudinary's destroy api so cloudinary take it as 'image' type by default and that's why our video assets were not deleting <br>
+=> Second one was in the "toggle-publish-status" api, in which used "$not" expression of mongodb in "findByIdAndUpdate" and that was giving us the error, and then we found out that this type of expression is not supported in some simple methods (here "findByIdAndUpdate") but it can be written in the mongodb pipeline so we used "findOneAndUpdate" instead of "findByIdAndUpdate" because it supports pipeline as one of its argument, and we can easily use every type of expression (here "$not") there <br>
+=> Then another one was in the "get-all-videos" api, in which we are doing mistake while writing the mongodb pipeline, in which for one test case our sort-stage getting empty which is not allowed by mongodb so we just added by-default value to the sort stage <br>
+=> For your ref [here](https://github.com/JD-011/Chai-aur-Backend/commit/2d706f8bf25704f4265fff9763b9cc1937b911f3) is the last commit made on the github in this section
+
+---
+
 # Assignments:
 => Complete all Todos present in the project <br>
 => Try to console every data to see what are we actually getting, and we may learn something new by doing it <br>
