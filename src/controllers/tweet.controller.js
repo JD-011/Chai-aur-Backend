@@ -43,7 +43,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
     const tweets = await Tweet.find({
         owner: userId,
-    });
+    }).select("-owner");
 
     if (!tweets) {
         throw new ApiError(500, "something went wrong while fetching tweets");

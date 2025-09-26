@@ -34,8 +34,6 @@ const registerUser = asyncHandler(async (req, res) => {
     // return res
 
     const { fullName, username, email, password } = req.body;
-    // console.log("email", email);
-    // console.log("password", password);
 
     if (
         [fullName, username, email, password].some(
@@ -74,7 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
         avatar: avatar.url,
         avatarId: avatar.public_id,
         coverImage: coverImage?.url || "",
-        coverImageId: coverImage.public_id,
+        coverImageId: coverImage?.public_id,
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -100,7 +98,6 @@ const loginUser = asyncHandler(async (req, res) => {
     // generate access & refresh token
     // send them into cookies & return res
 
-    // console.log(req);
     const { username, email, password } = req.body;
 
     if (!username && !email) {
@@ -126,7 +123,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 
     const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken"
+        "-password -refreshToken -watchHistory -createdAt -updatedAt"
     );
 
     const options = {
@@ -135,8 +132,14 @@ const loginUser = asyncHandler(async (req, res) => {
     };
 
     res.status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, {
+            ...options,
+            maxAge: 15 * 60 * 1000,
+        })
+        .cookie("refreshToken", refreshToken, {
+            ...options,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
         .json(
             new ApiResponse(
                 200,
@@ -151,8 +154,6 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    // console.log(req.user);
-    // console.log(typeof req.user._id);
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -178,7 +179,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
-        req.cookies?.refreshToken || req.body.refreshToken;
+        req.cookies?.refreshToken || req.body?.refreshToken;
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "Unauthorized request");
@@ -213,8 +214,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     };
 
     res.status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, {
+            ...options,
+            maxAge: 15 * 60 * 1000,
+        })
+        .cookie("refreshToken", refreshToken, {
+            ...options,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
         .json(
             new ApiResponse(
                 200,
