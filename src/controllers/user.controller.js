@@ -33,46 +33,79 @@ const registerUser = asyncHandler(async (req, res) => {
     // remove password & refresh token field from response
     // return res
 
-    const { fullName, username, email, password } = req.body;
+    let {
+        fullName,
+        username,
+        email,
+        password,
+        avatar_url,
+        email_verified,
+        authType,
+        googleId,
+    } = req.body;
 
     if (
-        [fullName, username, email, password].some(
+        [fullName, username, email].some(
             (field) => !field || field.trim() === ""
         )
     ) {
         throw new ApiError(400, "All fields are required");
     }
 
-    const existedUser = await User.findOne({
-        $or: [{ username }, { email }],
+    if (authType === "google" && !email_verified) {
+        throw new ApiError(400, "Email is not verified by Google");
+    }
+
+    let existedUser = await User.findOne({
+        email: email,
     });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email or username already exists");
+        throw new ApiError(409, "User with given email already exists");
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    if (authType === "google") {
+        const users = await User.find({
+            username: username,
+        });
+        username = username + users.length;
+    }
+
+    existedUser = await User.findOne({
+        username: username,
+    });
+
+    if (existedUser) {
+        throw new ApiError(409, "User with given username already exists");
+    }
+
+    const avatarLocalPath = req.files?.avatar
+        ? req.files?.avatar[0]?.path
+        : null;
     const coverImageLocalPath = req.files?.coverImage
         ? req.files?.coverImage[0].path
         : null;
 
-    if (!avatarLocalPath) throw new ApiError(400, "Avatar is required");
+    if (!avatarLocalPath && !avatar_url)
+        throw new ApiError(400, "Avatar is required");
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-    if (!avatar)
+    if (!avatar && !avatar_url)
         throw new ApiError(500, "Something went wrong while uploading avatar");
 
     const user = await User.create({
         fullName,
         username: username.toLowerCase(),
         email,
-        password,
-        avatar: avatar.url,
-        avatarId: avatar.public_id,
-        coverImage: coverImage?.url || "",
+        password: password ? password : undefined,
+        avatar: avatar ? avatar.url : avatar_url,
+        avatarId: avatar?.public_id,
+        coverImage: coverImage?.url,
         coverImageId: coverImage?.public_id,
+        authType: authType ? authType : undefined,
+        googleId: googleId ? googleId : undefined,
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -85,45 +118,8 @@ const registerUser = asyncHandler(async (req, res) => {
             "Something went wrong while registering the user"
         );
 
-    res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
-    );
-});
-
-const loginUser = asyncHandler(async (req, res) => {
-    // req.body -> data
-    // username or email check
-    // find the user
-    // password check
-    // generate access & refresh token
-    // send them into cookies & return res
-
-    const { username, email, password } = req.body;
-
-    if (!username && !email) {
-        throw new ApiError(400, "username or email is required");
-    }
-
-    const user = await User.findOne({
-        $or: [{ username }, { email }],
-    });
-
-    if (!user) {
-        throw new ApiError(404, "User does not exist");
-    }
-
-    const isPasswordValid = await user.isPasswordCorrect(password);
-
-    if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid user credentials");
-    }
-
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-        user._id
-    );
-
-    const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken -watchHistory -createdAt -updatedAt"
+        createdUser._id
     );
 
     const options = {
@@ -134,7 +130,80 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(200)
         .cookie("accessToken", accessToken, {
             ...options,
-            maxAge: 15 * 60 * 1000,
+            maxAge: 60 * 60 * 1000,
+        })
+        .cookie("refreshToken", refreshToken, {
+            ...options,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json(
+            new ApiResponse(
+                201,
+                {
+                    user: createdUser,
+                    accessToken,
+                    refreshToken,
+                },
+                "User registered successfully"
+            )
+        );
+});
+
+const loginUser = asyncHandler(async (req, res) => {
+    // req.body -> data
+    // username or email check
+    // find the user
+    // password check
+    // generate access & refresh token
+    // send them into cookies & return res
+
+    const { username, email, password, authType, googleId } = req.body;
+
+    if (!username && !email) {
+        throw new ApiError(400, "username or email is required");
+    }
+
+    let user;
+
+    if (authType === "google") {
+        user = await User.findOne({
+            $and: [{ googleId }, { email }],
+        });
+    } else {
+        user = await User.findOne({
+            $or: [{ username }, { email }],
+        });
+    }
+
+    if (!user) {
+        throw new ApiError(404, "User does not exist");
+    }
+
+    if (user.authType === "local") {
+        const isPasswordValid = await user.isPasswordCorrect(password);
+
+        if (!isPasswordValid) {
+            throw new ApiError(401, "Invalid user credentials");
+        }
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+        user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    res.status(200)
+        .cookie("accessToken", accessToken, {
+            ...options,
+            maxAge: 60 * 60 * 1000,
         })
         .cookie("refreshToken", refreshToken, {
             ...options,
@@ -216,7 +285,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     res.status(200)
         .cookie("accessToken", accessToken, {
             ...options,
-            maxAge: 15 * 60 * 1000,
+            maxAge: 60 * 60 * 1000,
         })
         .cookie("refreshToken", refreshToken, {
             ...options,

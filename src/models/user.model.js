@@ -31,7 +31,6 @@ const userSchema = new Schema(
         },
         avatarId: {
             type: String,
-            required: true,
         },
         coverImage: {
             type: String, // cloudinary url
@@ -41,7 +40,6 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
-            required: [true, "Password is required"],
         },
         refreshToken: {
             type: String,
@@ -52,12 +50,20 @@ const userSchema = new Schema(
                 ref: "Video",
             },
         ],
+        authType: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local",
+        },
+        googleId: {
+            type: String,
+        },
     },
     { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+    if (!this.password || !this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });

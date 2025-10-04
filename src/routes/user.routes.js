@@ -14,6 +14,7 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/OAuth.middleware.js";
 
 const router = Router();
 
@@ -33,7 +34,9 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser);
 
-// secured routes:
+router.route("/google-register").post(verifyToken, registerUser);
+
+router.route("/google-login").post(verifyToken, loginUser);
 
 router.route("/logout").post(verifyJWT, logoutUser);
 
