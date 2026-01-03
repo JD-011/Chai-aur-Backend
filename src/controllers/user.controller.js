@@ -125,6 +125,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
+        sameSite: "Strict",
     };
 
     res.status(200)
@@ -198,6 +199,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
+        sameSite: "Strict",
     };
 
     res.status(200)
@@ -280,6 +282,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
+        sameSite: "Strict",
     };
 
     res.status(200)

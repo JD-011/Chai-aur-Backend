@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
-import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -128,6 +127,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
+    const { userId } = req.query;
 
     if (!videoId) {
         throw new ApiError(400, "Video id is missing");
@@ -151,12 +151,299 @@ const getVideoById = asyncHandler(async (req, res) => {
                 as: "owner",
                 pipeline: [
                     {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            let: { ownerId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                {
+                                                    $eq: [
+                                                        "$channel",
+                                                        "$$ownerId",
+                                                    ],
+                                                },
+                                                {
+                                                    $eq: [
+                                                        "$subscriber",
+                                                        new mongoose.Types.ObjectId(
+                                                            userId
+                                                        ),
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                { $limit: 1 },
+                            ],
+                            as: "subscribed",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            subscribers: {
+                                $size: "$subscribers",
+                            },
+                            subscribed: {
+                                $cond: {
+                                    if: { $gt: [{ $size: "$subscribed" }, 0] },
+                                    then: true,
+                                    else: false,
+                                },
+                            },
+                        },
+                    },
+                    {
                         $project: {
                             _id: 1,
                             fullName: 1,
                             username: 1,
                             email: 1,
                             avatar: 1,
+                            subscribers: 1,
+                            subscribed: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "video",
+                as: "likeCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "dislikes",
+                localField: "_id",
+                foreignField: "video",
+                as: "dislikeCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "likes",
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: [
+                                            "$video",
+                                            new mongoose.Types.ObjectId(
+                                                videoId
+                                            ),
+                                        ],
+                                    },
+                                    {
+                                        $eq: [
+                                            "$likedBy",
+                                            new mongoose.Types.ObjectId(userId),
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    { $limit: 1 },
+                ],
+                as: "liked",
+            },
+        },
+        {
+            $lookup: {
+                from: "dislikes",
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: [
+                                            "$video",
+                                            new mongoose.Types.ObjectId(
+                                                videoId
+                                            ),
+                                        ],
+                                    },
+                                    {
+                                        $eq: [
+                                            "$dislikedBy",
+                                            new mongoose.Types.ObjectId(userId),
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    { $limit: 1 },
+                ],
+                as: "disliked",
+            },
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "video",
+                as: "comments",
+                pipeline: [
+                    {
+                        $sort: {
+                            createdAt: -1,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        username: 1,
+                                        fullName: 1,
+                                        avatar: 1,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "likes",
+                            localField: "_id",
+                            foreignField: "comment",
+                            as: "likeCount",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "dislikes",
+                            localField: "_id",
+                            foreignField: "comment",
+                            as: "dislikeCount",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "likes",
+                            let: { commentId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                {
+                                                    $eq: [
+                                                        "$comment",
+                                                        "$$commentId",
+                                                    ],
+                                                },
+                                                {
+                                                    $eq: [
+                                                        "$likedBy",
+                                                        new mongoose.Types.ObjectId(
+                                                            userId
+                                                        ),
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                { $limit: 1 },
+                            ],
+                            as: "liked",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "dislikes",
+                            let: { commentId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                {
+                                                    $eq: [
+                                                        "$comment",
+                                                        "$$commentId",
+                                                    ],
+                                                },
+                                                {
+                                                    $eq: [
+                                                        "$dislikedBy",
+                                                        new mongoose.Types.ObjectId(
+                                                            userId
+                                                        ),
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                { $limit: 1 },
+                            ],
+                            as: "disliked",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            owner: {
+                                $first: "$owner",
+                            },
+                            likeCount: {
+                                $size: "$likeCount",
+                            },
+                            dislikeCount: {
+                                $size: "$dislikeCount",
+                            },
+                            liked: {
+                                $cond: {
+                                    if: { $gt: [{ $size: "$liked" }, 0] },
+                                    then: true,
+                                    else: false,
+                                },
+                            },
+                            disliked: {
+                                $cond: {
+                                    if: { $gt: [{ $size: "$disliked" }, 0] },
+                                    then: true,
+                                    else: false,
+                                },
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            video: 1,
+                            content: 1,
+                            owner: 1,
+                            likeCount: 1,
+                            dislikeCount: 1,
+                            liked: 1,
+                            disliked: 1,
+                            createdAt: 1,
                         },
                     },
                 ],
@@ -167,6 +454,29 @@ const getVideoById = asyncHandler(async (req, res) => {
                 owner: {
                     $first: "$owner",
                 },
+                likeCount: {
+                    $size: "$likeCount",
+                },
+                dislikeCount: {
+                    $size: "$dislikeCount",
+                },
+                commentCount: {
+                    $size: "$comments",
+                },
+                liked: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$liked" }, 0] },
+                        then: true,
+                        else: false,
+                    },
+                },
+                disliked: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$disliked" }, 0] },
+                        then: true,
+                        else: false,
+                    },
+                },
             },
         },
     ]);
@@ -174,6 +484,8 @@ const getVideoById = asyncHandler(async (req, res) => {
     if (!video?.length) {
         throw new ApiError(404, "Video not found");
     }
+
+    await Video.findByIdAndUpdate(videoId, { views: video[0].views + 1 });
 
     res.status(200).json(
         new ApiResponse(200, video[0], "Video fetched successfully")
