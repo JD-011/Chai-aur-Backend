@@ -131,7 +131,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid user id");
     }
 
-    const likedVideos = await Like.aggregate([
+    const data = await Like.aggregate([
         {
             $match: {
                 likedBy: new mongoose.Types.ObjectId(req.user._id),
@@ -177,6 +177,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                             thumbnail: 1,
                             owner: 1,
                             title: 1,
+                            description: 1,
                             duration: 1,
                             views: 1,
                             createdAt: 1,
@@ -194,18 +195,21 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         },
         {
             $project: {
-                _id: 1,
                 video: 1,
-                updatedAt: 1,
             },
         },
     ]);
 
-    if (!likedVideos) {
+    if (!data) {
         throw new ApiError(
             500,
             "Something went wrong while fetching liked videos"
         );
+    }
+
+    const likedVideos = [];
+    for (const obj of data) {
+        likedVideos.push(obj.video);
     }
 
     res.status(200).json(

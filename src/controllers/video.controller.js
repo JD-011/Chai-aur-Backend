@@ -1,5 +1,6 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -486,6 +487,15 @@ const getVideoById = asyncHandler(async (req, res) => {
     }
 
     await Video.findByIdAndUpdate(videoId, { views: video[0].views + 1 });
+    if (userId) {
+        const user = await User.findById(userId);
+        const index = user.watchHistory.indexOf(videoId);
+        if (index > -1) {
+            user.watchHistory.splice(index, 1);
+        }
+        user.watchHistory.unshift(videoId);
+        await user.save();
+    }
 
     res.status(200).json(
         new ApiResponse(200, video[0], "Video fetched successfully")

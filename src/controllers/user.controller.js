@@ -420,6 +420,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     const { username } = req.params;
+    const { userId } = req.query;
 
     if (!username?.trim()) {
         throw new ApiError(400, "username is missing");
@@ -457,7 +458,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 },
                 isSubscribed: {
                     $cond: {
-                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                        if: {
+                            $in: [
+                                new mongoose.Types.ObjectId(userId),
+                                "$subscribers.subscriber",
+                            ],
+                        },
                         then: true,
                         else: false,
                     },
@@ -497,10 +503,24 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         {
             $lookup: {
                 from: "videos",
-                localField: "watchHistory",
-                foreignField: "_id",
+                let: { watchHistory: "$watchHistory" },
                 as: "watchHistory",
                 pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $in: ["$_id", "$$watchHistory"],
+                            },
+                        },
+                    },
+                    {
+                        $addFields: {
+                            order: {
+                                $indexOfArray: ["$$watchHistory", "$_id"],
+                            },
+                        },
+                    },
+                    { $sort: { order: 1 } },
                     {
                         $lookup: {
                             from: "users",
@@ -531,6 +551,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                             thumbnail: 1,
                             owner: 1,
                             title: 1,
+                            description: 1,
                             duration: 1,
                             views: 1,
                             createdAt: 1,
