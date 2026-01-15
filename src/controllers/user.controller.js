@@ -312,10 +312,11 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Unauthorized request");
     }
 
-    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
-
-    if (!isPasswordValid) {
-        throw new ApiError(400, "Invalid old password");
+    if (user.authType === "local") {
+        const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+        if (!isPasswordValid) {
+            throw new ApiError(400, "Invalid old password");
+        }
     }
 
     user.password = newPassword;
@@ -328,6 +329,33 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
 const getCurrentUser = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { user: req.user }));
+});
+
+const updateUsername = asyncHandler(async (req, res) => {
+    const { username } = req.body;
+
+    if (!username) {
+        throw new ApiError(400, "username is required");
+    }
+
+    const exists = await User.findOne({ username });
+    if (exists && username !== req.user.username) {
+        throw new ApiError(400, "username already exists");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                username,
+            },
+        },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    res.status(200).json(
+        new ApiResponse(200, user, "Username updated successfully")
+    );
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
@@ -580,6 +608,7 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
+    updateUsername,
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
