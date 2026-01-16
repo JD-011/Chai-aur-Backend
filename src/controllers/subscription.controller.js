@@ -42,6 +42,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
+    const { userId } = req.query;
 
     if (!channelId) {
         throw new ApiError(400, "Channel id is missing");
@@ -65,13 +66,68 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 as: "subscriber",
                 pipeline: [
                     {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            let: { ownerId: "$_id" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                {
+                                                    $eq: [
+                                                        "$channel",
+                                                        "$$ownerId",
+                                                    ],
+                                                },
+                                                {
+                                                    $eq: [
+                                                        "$subscriber",
+                                                        new mongoose.Types.ObjectId(
+                                                            userId
+                                                        ),
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                { $limit: 1 },
+                            ],
+                            as: "subscribed",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            subscribers: {
+                                $size: "$subscribers",
+                            },
+                            subscribed: {
+                                $cond: {
+                                    if: { $gt: [{ $size: "$subscribed" }, 0] },
+                                    then: true,
+                                    else: false,
+                                },
+                            },
+                        },
+                    },
+                    {
                         $project: {
                             _id: 1,
                             fullName: 1,
                             username: 1,
                             email: 1,
                             avatar: 1,
-                            createdAt: 1,
+                            subscribers: 1,
+                            subscribed: 1,
                         },
                     },
                 ],
