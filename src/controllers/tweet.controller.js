@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
-import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -32,6 +31,7 @@ const createTweet = asyncHandler(async (req, res) => {
 
 const getUserTweets = asyncHandler(async (req, res) => {
     const { userId } = req.params;
+    const { UserId } = req.query;
 
     if (!userId) {
         throw new ApiError(400, "User id is missing");
@@ -41,9 +41,145 @@ const getUserTweets = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid user id");
     }
 
-    const tweets = await Tweet.find({
-        owner: userId,
-    }).select("-owner");
+    const tweets = await Tweet.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId),
+            },
+        },
+        {
+            $sort: {
+                createdAt: -1,
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "tweet",
+                as: "likeCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "dislikes",
+                localField: "_id",
+                foreignField: "tweet",
+                as: "dislikeCount",
+            },
+        },
+        {
+            $lookup: {
+                from: "likes",
+                let: { tweetId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: ["$tweet", "$$tweetId"],
+                                    },
+                                    {
+                                        $eq: [
+                                            "$likedBy",
+                                            new mongoose.Types.ObjectId(UserId),
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    { $limit: 1 },
+                ],
+                as: "liked",
+            },
+        },
+        {
+            $lookup: {
+                from: "dislikes",
+                let: { tweetId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: ["$tweet", "$$tweetId"],
+                                    },
+                                    {
+                                        $eq: [
+                                            "$dislikedBy",
+                                            new mongoose.Types.ObjectId(UserId),
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    { $limit: 1 },
+                ],
+                as: "disliked",
+            },
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner",
+                },
+                likeCount: {
+                    $size: "$likeCount",
+                },
+                dislikeCount: {
+                    $size: "$dislikeCount",
+                },
+                liked: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$liked" }, 0] },
+                        then: true,
+                        else: false,
+                    },
+                },
+                disliked: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$disliked" }, 0] },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                content: 1,
+                owner: 1,
+                likeCount: 1,
+                dislikeCount: 1,
+                liked: 1,
+                disliked: 1,
+                createdAt: 1,
+            },
+        },
+    ]);
 
     if (!tweets) {
         throw new ApiError(500, "something went wrong while fetching tweets");
