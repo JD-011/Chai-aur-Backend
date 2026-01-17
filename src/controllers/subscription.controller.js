@@ -1,5 +1,4 @@
 import mongoose, { isValidObjectId } from "mongoose";
-import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -63,7 +62,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "subscriber",
                 foreignField: "_id",
-                as: "subscriber",
+                as: "owner",
                 pipeline: [
                     {
                         $lookup: {
@@ -135,8 +134,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                subscriber: {
-                    $first: "$subscriber",
+                owner: {
+                    $first: "$owner",
                 },
                 subscribedAt: "$createdAt",
             },
@@ -144,7 +143,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         {
             $project: {
                 _id: 1,
-                subscriber: 1,
+                owner: 1,
                 subscribedAt: 1,
             },
         },
@@ -184,8 +183,24 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "channel",
                 foreignField: "_id",
-                as: "channel",
+                as: "owner",
                 pipeline: [
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            subscribers: {
+                                $size: "$subscribers",
+                            },
+                            subscribed: true,
+                        },
+                    },
                     {
                         $project: {
                             _id: 1,
@@ -194,6 +209,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                             email: 1,
                             avatar: 1,
                             createdAt: 1,
+                            subscribers: 1,
+                            subscribed: 1,
                         },
                     },
                 ],
@@ -201,8 +218,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                channel: {
-                    $first: "$channel",
+                owner: {
+                    $first: "$owner",
                 },
                 subscribedAt: "$createdAt",
             },
@@ -210,7 +227,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         {
             $project: {
                 _id: 1,
-                channel: 1,
+                owner: 1,
                 subscribedAt: 1,
             },
         },
