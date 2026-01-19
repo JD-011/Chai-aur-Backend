@@ -40,9 +40,57 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid user id");
     }
 
-    const playlists = await Playlist.find({
-        owner: userId,
-    }).select("-videos -owner -updatedAt");
+    const playlists = await Playlist.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId),
+            },
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "videos",
+                foreignField: "_id",
+                as: "videos",
+                pipeline: [
+                    {
+                        $sort: {
+                            createdAt: -1,
+                        },
+                    },
+                    {
+                        $project: {
+                            views: 1,
+                            thumbnail: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $addFields: {
+                thumbnail: {
+                    $first: "$videos.thumbnail",
+                },
+                views: {
+                    $sum: "$videos.views",
+                },
+                videos: {
+                    $size: "$videos",
+                },
+            },
+        },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                videos: 1,
+                thumbnail: 1,
+                views: 1,
+                createdAt: 1,
+            },
+        },
+    ]);
 
     if (!playlists) {
         throw new ApiError(
@@ -64,7 +112,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     }
 
     if (!isValidObjectId(playlistId)) {
-        throw new ApiError(400, "Invalid playlist id");
+        throw new ApiError(404, "Invalid playlist id");
     }
 
     const playlist = await Playlist.aggregate([
@@ -80,6 +128,11 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 foreignField: "_id",
                 as: "videos",
                 pipeline: [
+                    {
+                        $sort: {
+                            createdAt: -1,
+                        },
+                    },
                     {
                         $project: {
                             _id: 1,
@@ -101,12 +154,28 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 as: "owner",
                 pipeline: [
                     {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            subscribers: {
+                                $size: "$subscribers",
+                            },
+                        },
+                    },
+                    {
                         $project: {
                             _id: 1,
                             fullName: 1,
                             username: 1,
                             email: 1,
                             avatar: 1,
+                            subscribers: 1,
                         },
                     },
                 ],
@@ -117,6 +186,9 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 owner: {
                     $first: "$owner",
                 },
+                views: {
+                    $sum: "$videos.views",
+                },
             },
         },
         {
@@ -126,6 +198,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 description: 1,
                 owner: 1,
                 videos: 1,
+                views: 1,
                 createdAt: 1,
             },
         },
