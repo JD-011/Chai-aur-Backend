@@ -47,9 +47,20 @@ const getChannelStats = asyncHandler(async (req, res) => {
                         },
                     },
                     {
+                        $lookup: {
+                            from: "dislikes",
+                            localField: "_id",
+                            foreignField: "video",
+                            as: "dislikes",
+                        },
+                    },
+                    {
                         $addFields: {
                             likes: {
                                 $size: "$likes",
+                            },
+                            dislikes: {
+                                $size: "$dislikes",
                             },
                         },
                     },
@@ -65,6 +76,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
                 subscribers: 1,
                 views: { $sum: "$videos.views" },
                 likes: { $sum: "$videos.likes" },
+                dislikes: { $sum: "$videos.dislikes" },
             },
         },
     ]);
@@ -94,6 +106,11 @@ const getChannelVideos = asyncHandler(async (req, res) => {
             },
         },
         {
+            $sort: {
+                createdAt: -1,
+            },
+        },
+        {
             $lookup: {
                 from: "likes",
                 localField: "_id",
@@ -102,9 +119,20 @@ const getChannelVideos = asyncHandler(async (req, res) => {
             },
         },
         {
+            $lookup: {
+                from: "dislikes",
+                localField: "_id",
+                foreignField: "video",
+                as: "dislikes",
+            },
+        },
+        {
             $addFields: {
                 likes: {
                     $size: "$likes",
+                },
+                dislikes: {
+                    $size: "$dislikes",
                 },
             },
         },
@@ -116,6 +144,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                 isPublished: 1,
                 createdAt: 1,
                 likes: 1,
+                dislikes: 1,
             },
         },
     ]);
