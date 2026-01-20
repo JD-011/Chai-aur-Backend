@@ -141,6 +141,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                 _id: 1,
                 thumbnail: 1,
                 title: 1,
+                description: 1,
                 isPublished: 1,
                 createdAt: 1,
                 likes: 1,
