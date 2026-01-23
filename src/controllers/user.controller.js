@@ -68,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
         const users = await User.find({
             username: username,
         });
-        username = username + users.length;
+        if (users.length !== 0) username = username + users.length;
     }
 
     existedUser = await User.findOne({
